@@ -7,14 +7,16 @@ form.addEventListener('submit', async (event) => {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
 
-    const response = await fetch('http://localhost:3000/auth/signup', {
+    // ✅ USE YOUR LIVE BACKEND URL HERE
+    const backendUrl = 'https://chatbackend-1-w5o6.onrender.com';
+    const response = await fetch(`${backendUrl}/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
     });
 
     if (response.ok) {
-        alert('✅Signup Successful!!!');
+        alert('✅ Signup Successful! Please log in.');
         window.location.href = 'login.html'; // Redirect to login
     } else if (response.status === 409) {
         errorMessage.textContent = 'This username is already taken. Please choose another.';
