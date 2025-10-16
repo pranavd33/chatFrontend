@@ -1,0 +1,52 @@
+html, body {
+    height: 100%;
+    overflow: hidden; /* This PREVENTS the whole page from scrolling */
+}
+
+.main-container {
+    height: 100vh;
+}
+
+#message-area {
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+.message {
+    padding: 10px 15px;
+    border-radius: 20px;
+    margin-bottom: 5px;
+    max-width: 60%;
+    word-wrap: break-word;
+}
+
+.message.sent {
+    background-color: #a1c5fa;
+    color: rgb(0, 0, 0);
+}
+
+.message.received {
+    background-color: #e9ecef;
+    color: black;
+}
+
+.message-sender {
+    font-size: 0.8rem;
+    margin-bottom: 4px;
+}
+.chat-window {
+            display: flex;
+            flex-direction: column;
+            height: 100%; /* This is crucial: makes the chat panel use all vertical space */
+        }
+#attach-button {
+    background-image: url("https://static.vecteezy.com/system/resources/previews/055/159/851/non_2x/file-manager-icon-yellow-free-png.png");
+    background-size: cover;
+    width: 35px;
+    height: 35px;
+    margin-right: 5px;
+    margin-top: 3px;
+}
+#logout-button{
+    margin-top: 100px;
+}
