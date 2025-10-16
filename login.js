@@ -7,7 +7,9 @@ form.addEventListener('submit', async (event) => {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
 
-    const response = await fetch('http://localhost:3000/auth/login', {
+    // ✅ USE YOUR LIVE BACKEND URL HERE
+    const backendUrl = 'https://chatbackend-1-w5o6.onrender.com';
+    const response = await fetch(`${backendUrl}/auth/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -17,12 +19,11 @@ form.addEventListener('submit', async (event) => {
 
     if (response.ok) {
         const user = await response.json();
-        
-        // Store the full user object in local storage
         localStorage.setItem('chatUser', JSON.stringify(user));
         
-        // **THE FIX:** Redirect to index.html and add the user's ID to the URL
-        window.location.href = `index.html?user=${user.id}`;
+        // This line is now redundant if your main script.js uses localStorage,
+        // but it doesn't hurt to keep it.
+        window.location.href = `index.html`;
 
     } else {
         errorMessage.textContent = 'Login failed. Please check your username and password.';
