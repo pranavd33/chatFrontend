@@ -1,3 +1,5 @@
+// In public/signup.js
+
 const form = document.getElementById('signup-form');
 const errorMessage = document.getElementById('error-message');
 
@@ -7,7 +9,6 @@ form.addEventListener('submit', async (event) => {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
 
-    // ✅ USE YOUR LIVE BACKEND URL HERE
     const backendUrl = 'https://chatbackend-1-w5o6.onrender.com';
     const response = await fetch(`${backendUrl}/auth/signup`, {
         method: 'POST',

@@ -27,10 +27,9 @@ loadUsersAndRestoreState();
 
 // --- CORE FUNCTIONS ---
 async function loadUsersAndRestoreState() {
-  // ✅ USE THE LIVE BACKEND URL
   const response = await fetch(`${backendUrl}/users`);
   const users = await response.json();
-  
+
   UI.userList.innerHTML = '';
   users.forEach(user => {
     if (user.id === currentUser.id) return;
@@ -59,20 +58,19 @@ async function selectUserToChat(user) {
   UI.messageArea.innerHTML = 'Loading messages...';
 
   document.querySelectorAll('#user-list .list-group-item').forEach(el => el.classList.remove('active'));
-  
+
   const userElement = document.getElementById(`user-${user.id}`);
   if (userElement) {
     userElement.classList.add('active');
   }
 
-  // ✅ USE THE LIVE BACKEND URL
   const response = await fetch(`${backendUrl}/chat/conversation/find-or-create`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ user1Id: currentUser.id, user2Id: user.id }),
   });
   const conversation = await response.json();
-  
+
   if (activeConversationId !== conversation.id) {
     activeConversationId = conversation.id;
     socket.emit('joinRoom', { conversationId: activeConversationId });
@@ -86,7 +84,6 @@ async function selectUserToChat(user) {
 
 async function fetchMessageHistory(conversationId) {
   UI.messageArea.innerHTML = '';
-  // ✅ USE THE LIVE BACKEND URL
   const response = await fetch(`${backendUrl}/chat/conversation/${conversationId}`);
   const messages = await response.json();
   messages.forEach(displayMessage);
@@ -127,7 +124,6 @@ UI.fileInput.addEventListener('change', async (event) => {
   if (!file || !activeConversationId) return;
   const formData = new FormData();
   formData.append('file', file);
-  // ✅ USE THE LIVE BACKEND URL
   const response = await fetch(`${backendUrl}/chat/upload`, { method: 'POST', body: formData });
   const result = await response.json();
   sendMessage(result.url);
@@ -149,14 +145,14 @@ function addMessageToUI(sender, content, type) {
   senderDiv.textContent = sender;
   const contentDiv = document.createElement('div');
   contentDiv.classList.add('message-content');
-  
+
   if (content.match(/\.(jpeg|jpg|gif|png)$/)) {
     const img = document.createElement('img');
     img.src = content;
     img.style.maxWidth = '200px';
     img.style.borderRadius = '10px';
     contentDiv.appendChild(img);
-  } else if (content.startsWith(backendUrl)) { // ✅ USE THE LIVE BACKEND URL
+  } else if (content.startsWith(backendUrl)) {
     const link = document.createElement('a');
     link.href = content;
     link.textContent = content.split('-').slice(2).join('-') || 'Download File';
@@ -165,11 +161,11 @@ function addMessageToUI(sender, content, type) {
   } else {
     contentDiv.textContent = content;
   }
-  
+
   messageDiv.appendChild(senderDiv);
   messageDiv.appendChild(contentDiv);
-  messageWrapper.appendChild(messageDiv); 
-  
+  messageWrapper.appendChild(messageDiv);
+
   UI.messageArea.appendChild(messageWrapper);
   UI.messageArea.scrollTop = UI.messageArea.scrollHeight;
 }
