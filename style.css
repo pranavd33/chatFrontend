@@ -3,35 +3,38 @@ html, body {
     overflow: hidden; /* Prevents the whole page from scrolling */
 }
 
+/* 1. CHANGE THIS RULE */
 .chat-window {
     display: flex;
     flex-direction: column;
-    height: 100vh; /* Use 100vh for full viewport height */
+    height: 100dvh; /* <-- CHANGED from 100vh */
 }
 
-/* On desktop, make sure both panels are full height */
+/* 2. ADD THIS NEW RULE */
+/* This makes the user list match the chat window height on mobile */
+#user-list-container {
+    height: 100dvh;
+}
+
+/* 3. CHANGE THIS RULE */
 @media (min-width: 768px) {
+    /* No change needed here, 100vh is fine for desktop */
+    .chat-window {
+         height: 100vh;
+    }
+    
+    /* This rule was inside the media query, but let's just make it simple */
     #user-list-container {
-        height: 100vh;
+        height: 100vh; /* vh is fine for desktop */
     }
 }
 
-/* --- This is the magic --- */
-
-/* 1. This makes the USER LIST scrollable */
-#user-list {
-    flex-grow: 1;
-    overflow-y: auto;
-}
-
-/* 2. This makes the MESSAGE AREA scrollable */
 #message-area {
     flex-grow: 1;
     overflow-y: auto;
 }
 
-/* --- End magic --- */
-
+/* ... all your other styles (.message, .message.sent, etc.) remain exactly the same ... */
 
 .message {
     padding: 10px 15px;
