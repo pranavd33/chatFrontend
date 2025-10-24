@@ -1,5 +1,6 @@
 html, body {
     height: 100%;
+    overflow: hidden; /* Prevents the whole page from scrolling */
 }
 
 .chat-window {
@@ -8,20 +9,29 @@ html, body {
     height: 100vh; /* Use 100vh for full viewport height */
 }
 
-/* On desktop, we want the panels to scroll, not the body */
+/* On desktop, make sure both panels are full height */
 @media (min-width: 768px) {
-    .chat-window {
-         height: 100vh;
-    }
     #user-list-container {
         height: 100vh;
     }
 }
 
+/* --- This is the magic --- */
+
+/* 1. This makes the USER LIST scrollable */
+#user-list {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+/* 2. This makes the MESSAGE AREA scrollable */
 #message-area {
     flex-grow: 1;
     overflow-y: auto;
 }
+
+/* --- End magic --- */
+
 
 .message {
     padding: 10px 15px;
@@ -31,7 +41,6 @@ html, body {
     word-wrap: break-word;
 }
 
-/* Your custom blue 'sent' color */
 .message.sent {
     background-color: #a1c5fa;
     color: rgb(0, 0, 0);
@@ -47,7 +56,6 @@ html, body {
     margin-bottom: 4px;
 }
 
-/* Your custom attach button style */
 #attach-button {
     background-image: url("https://static.vecteezy.com/system/resources/previews/055/159/851/non_2x/file-manager-icon-yellow-free-png.png");
     background-size: cover;
@@ -55,10 +63,9 @@ html, body {
     height: 35px;
     margin-right: 5px;
     margin-top: 3px;
-    border: none; /* Removed border for cleaner look */
+    border: none;
 }
 
-/* Your custom logout button style */
 #logout-button{
-    margin-top: 10px; /* Reduced margin slightly */
+    margin-top: 10px;
 }
