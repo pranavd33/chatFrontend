@@ -5,23 +5,25 @@ const socket = io(backendUrl);
 // --- GLOBAL VARIABLES ---
 let activeConversationId = null;
 const UI = {
-  userList: document.getElementById('user-list'),
-  chatContainer: document.getElementById('chat-container'),
-  chatHeader: document.getElementById('chat-header'),
-  messageArea: document.getElementById('message-area'),
-  messageInput: document.getElementById('message-input'),
-  sendButton: document.getElementById('send-button'),
-  attachButton: document.getElementById('attach-button'),
-  fileInput: document.getElementById('file-input'),
-  logoutButton: document.getElementById('logout-button'),
+    userListContainer: document.getElementById('user-list-container'),
+    userList: document.getElementById('user-list'),
+    chatContainer: document.getElementById('chat-container'),
+    chatHeader: document.getElementById('chat-header'),
+    messageArea: document.getElementById('message-area'),
+    messageInput: document.getElementById('message-input'),
+    sendButton: document.getElementById('send-button'),
+    attachButton: document.getElementById('attach-button'),
+    fileInput: document.getElementById('file-input'),
+    logoutButton: document.getElementById('logout-button'),
+    backButton: document.getElementById('back-button') // Mobile back button
 };
 
 // --- AUTHENTICATION ---
 // Get logged-in user details from browser storage
 const savedUser = localStorage.getItem('chatUser');
 if (!savedUser) {
-  // If no user is logged in, redirect to login page
-  window.location.href = 'login.html';
+    // If no user is logged in, redirect to login page
+    window.location.href = 'login.html';
 }
 const currentUser = JSON.parse(savedUser);
 
@@ -36,41 +38,41 @@ loadUsersAndRestoreState();
  * Also checks the URL to see if a chat should be automatically loaded.
  */
 async function loadUsersAndRestoreState() {
-  try {
-    const response = await fetch(`${backendUrl}/users`);
-    if (!response.ok) throw new Error('Failed to fetch users');
-    const users = await response.json();
+    try {
+        const response = await fetch(`${backendUrl}/users`);
+        if (!response.ok) throw new Error('Failed to fetch users');
+        const users = await response.json();
 
-    UI.userList.innerHTML = ''; // Clear existing list
-    users.forEach(user => {
-      // Don't show the current user in the list of people to chat with
-      if (user.id === currentUser.id) return;
+        UI.userList.innerHTML = ''; // Clear existing list
+        users.forEach(user => {
+            // Don't show the current user in the list of people to chat with
+            if (user.id === currentUser.id) return;
 
-      // Create a clickable element for each user
-      const userElement = document.createElement('a');
-      userElement.href = '#';
-      userElement.id = `user-${user.id}`; // Unique ID for highlighting
-      userElement.className = 'list-group-item list-group-item-action';
-      userElement.textContent = user.username;
-      userElement.onclick = () => selectUserToChat(user); // Set action on click
-      UI.userList.appendChild(userElement);
-    });
+            // Create a clickable element for each user
+            const userElement = document.createElement('a');
+            userElement.href = '#';
+            userElement.id = `user-${user.id}`; // Unique ID for highlighting
+            userElement.className = 'list-group-item list-group-item-action';
+            userElement.textContent = user.username;
+            userElement.onclick = () => selectUserToChat(user); // Set action on click
+            UI.userList.appendChild(userElement);
+        });
 
-    // Check if the URL has a 'chatWith' parameter from a previous session
-    const urlParams = new URLSearchParams(window.location.search);
-    const chatWithId = urlParams.get('chatWith');
-    if (chatWithId) {
-      // Find the user object corresponding to the ID in the URL
-      const chatWithUser = users.find(u => u.id === parseInt(chatWithId));
-      if (chatWithUser) {
-        // If found, automatically select that user's chat
-        selectUserToChat(chatWithUser);
-      }
+        // Check if the URL has a 'chatWith' parameter from a previous session
+        const urlParams = new URLSearchParams(window.location.search);
+        const chatWithId = urlParams.get('chatWith');
+        if (chatWithId) {
+            // Find the user object corresponding to the ID in the URL
+            const chatWithUser = users.find(u => u.id === parseInt(chatWithId));
+            if (chatWithUser) {
+                // If found, automatically select that user's chat
+                selectUserToChat(chatWithUser);
+            }
+        }
+    } catch (error) {
+        console.error("Error loading users:", error);
+        // You might want to display an error message to the user here
     }
-  } catch (error) {
-    console.error("Error loading users:", error);
-    // You might want to display an error message to the user here
-  }
 }
 
 /**
@@ -78,8 +80,14 @@ async function loadUsersAndRestoreState() {
  * @param {object} user - The user object that was clicked.
  */
 async function selectUserToChat(user) {
+    // --- MOBILE VIEWPORT LOGIC ---
+    // On mobile, hide the user list and show the chat window
+    UI.userListContainer.classList.add('d-none');
+    UI.chatContainer.classList.remove('d-none');
+    UI.chatContainer.classList.add('d-flex');
+    // --- END MOBILE LOGIC ---
+
     UI.chatHeader.textContent = `Chat with ${user.username}`;
-    UI.chatContainer.classList.remove('d-none'); // Show the chat area
     UI.messageArea.innerHTML = 'Loading messages...'; // Placeholder text
 
     // Highlight the selected user in the list
@@ -153,9 +161,9 @@ function sendMessage(contentOverride = null) {
     // Only send if there's content and a chat is active
     if (content && activeConversationId) {
         const messageData = {
-          content: content,
-          userId: currentUser.id,
-          conversationId: activeConversationId
+            content: content,
+            userId: currentUser.id,
+            conversationId: activeConversationId
         };
         // Emit the message event to the server
         socket.emit('sendMessage', messageData);
@@ -164,6 +172,19 @@ function sendMessage(contentOverride = null) {
 }
 
 // --- EVENT LISTENERS ---
+
+// ** MOBILE "Back" button listener **
+UI.backButton.addEventListener('click', () => {
+    // Show the user list
+    UI.userListContainer.classList.remove('d-none');
+    // Hide the chat window
+    UI.chatContainer.classList.add('d-none');
+    UI.chatContainer.classList.remove('d-flex');
+    // De-select any active user
+    document.querySelectorAll('#user-list .list-group-item').forEach(el => el.classList.remove('active'));
+    UI.chatHeader.textContent = 'Select a user to chat';
+    activeConversationId = null;
+});
 
 // Send message when Send button is clicked
 UI.sendButton.addEventListener('click', () => sendMessage());
@@ -193,8 +214,8 @@ UI.fileInput.addEventListener('change', async (event) => {
     try {
         // Upload the file to the backend's /chat/upload endpoint
         const response = await fetch(`${backendUrl}/chat/upload`, {
-          method: 'POST',
-          body: formData
+            method: 'POST',
+            body: formData
         });
         if (!response.ok) throw new Error('File upload failed');
         const result = await response.json();
@@ -204,8 +225,8 @@ UI.fileInput.addEventListener('change', async (event) => {
         console.error("Error uploading file:", error);
         alert("File upload failed.");
     } finally {
-      // Reset file input to allow uploading the same file again if needed
-      UI.fileInput.value = '';
+        // Reset file input to allow uploading the same file again if needed
+        UI.fileInput.value = '';
     }
 });
 
@@ -245,11 +266,13 @@ function addMessageToUI(sender, content, type) {
     // Check if the content is an uploaded file URL from our backend
     if (content.startsWith(`${backendUrl}/uploads/`)) {
         // Check if it's a common image type
-        if (content.match(/\.(jpeg|jpg|gif|png)$/)) {
+        if (content.match(/\.(jpeg|jpg|gif|png|webp)$/i)) { // Added webp and case-insensitive match
             const img = document.createElement('img');
             img.src = content;
             img.style.maxWidth = '200px'; // Limit image size
             img.style.borderRadius = '10px';
+            img.style.cursor = 'pointer';
+            img.onclick = () => window.open(content, '_blank'); // Open full image in new tab
             contentDiv.appendChild(img);
         } else {
             // Otherwise, create a download link
