@@ -1,40 +1,36 @@
 html, body {
     height: 100%;
-    overflow: hidden; /* Prevents the whole page from scrolling */
+    overflow: hidden; 
 }
 
-/* 1. CHANGE THIS RULE */
+/* This new rule targets the Bootstrap containers */
+.container-fluid.vh-100, .row.h-100 {
+    height: 100%;
+}
+
 .chat-window {
     display: flex;
     flex-direction: column;
-    height: 100dvh; /* <-- CHANGED from 100vh */
+    height: 100%; /* Changed from 100dvh */
 }
 
-/* 2. ADD THIS NEW RULE */
-/* This makes the user list match the chat window height on mobile */
 #user-list-container {
-    height: 100dvh;
+    height: 100%; /* Changed from 100dvh */
 }
 
-/* 3. CHANGE THIS RULE */
-@media (min-width: 768px) {
-    /* No change needed here, 100vh is fine for desktop */
-    .chat-window {
-         height: 100vh;
-    }
-    
-    /* This rule was inside the media query, but let's just make it simple */
-    #user-list-container {
-        height: 100vh; /* vh is fine for desktop */
-    }
+/* The @media query for desktop height is no longer needed;
+  100% height works for both mobile and desktop.
+*/
+
+#user-list {
+    flex-grow: 1;
+    overflow-y: auto;
 }
 
 #message-area {
     flex-grow: 1;
     overflow-y: auto;
 }
-
-/* ... all your other styles (.message, .message.sent, etc.) remain exactly the same ... */
 
 .message {
     padding: 10px 15px;
