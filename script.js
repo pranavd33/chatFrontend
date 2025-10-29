@@ -198,23 +198,35 @@ function addMessageToUI(sender, content, type) {
     const contentDiv = document.createElement('div');
     contentDiv.classList.add('message-content');
 
-    if (content.startsWith(`${backendUrl}/uploads/`)) {
-        if (content.match(/\.(jpeg|jpg|gif|png|webp)$/i)) {
+    // ✅ Detect media content (works for both absolute and relative URLs)
+    const fileUrlPattern = /^https?:\/\/.+\.(jpeg|jpg|png|gif|webp|mp4|pdf|docx?|xlsx?)$/i;
+
+    if (fileUrlPattern.test(content)) {
+        if (content.match(/\.(jpeg|jpg|png|gif|webp)$/i)) {
             const img = document.createElement('img');
             img.src = content;
+            img.alt = 'Uploaded file';
             img.style.maxWidth = '200px';
             img.style.borderRadius = '10px';
             img.style.cursor = 'pointer';
             img.onclick = () => window.open(content, '_blank');
             contentDiv.appendChild(img);
+        } else if (content.match(/\.(mp4)$/i)) {
+            const video = document.createElement('video');
+            video.src = content;
+            video.controls = true;
+            video.style.maxWidth = '250px';
+            video.style.borderRadius = '10px';
+            contentDiv.appendChild(video);
         } else {
             const link = document.createElement('a');
             link.href = content;
-            link.textContent = content.split('-').slice(2).join('-') || 'Download File';
+            link.textContent = content.split('/').pop();
             link.target = '_blank';
             contentDiv.appendChild(link);
         }
     } else {
+        // Normal text
         contentDiv.textContent = content;
     }
 
@@ -225,6 +237,8 @@ function addMessageToUI(sender, content, type) {
     UI.messageArea.appendChild(messageWrapper);
     UI.messageArea.scrollTop = UI.messageArea.scrollHeight;
 }
+
+
 
 // ✅ Improvement 2: Ensure layout correction on window resize (mobile ↔ desktop)
 window.addEventListener('resize', () => {
