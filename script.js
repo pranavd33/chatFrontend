@@ -198,6 +198,7 @@ function addMessageToUI(sender, content, type) {
     const contentDiv = document.createElement('div');
     contentDiv.classList.add('message-content');
 
+<<<<<<< HEAD
     // ✅ Detect media content (works for both absolute and relative URLs)
     const fileUrlPattern = /^https?:\/\/.+\.(jpeg|jpg|png|gif|webp|mp4|pdf|docx?|xlsx?)$/i;
 
@@ -206,6 +207,12 @@ function addMessageToUI(sender, content, type) {
             const img = document.createElement('img');
             img.src = content;
             img.alt = 'Uploaded file';
+=======
+    if (content.startsWith(`${backendUrl}/uploads/`)) {
+        if (content.match(/\.(jpeg|jpg|gif|png|webp)$/i)) {
+            const img = document.createElement('img');
+            img.src = content;
+>>>>>>> 19fcfe52fc7bd2929343b5bac145df6e0d4db60d
             img.style.maxWidth = '200px';
             img.style.borderRadius = '10px';
             img.style.cursor = 'pointer';
@@ -221,12 +228,19 @@ function addMessageToUI(sender, content, type) {
         } else {
             const link = document.createElement('a');
             link.href = content;
+<<<<<<< HEAD
             link.textContent = content.split('/').pop();
+=======
+            link.textContent = content.split('-').slice(2).join('-') || 'Download File';
+>>>>>>> 19fcfe52fc7bd2929343b5bac145df6e0d4db60d
             link.target = '_blank';
             contentDiv.appendChild(link);
         }
     } else {
+<<<<<<< HEAD
         // Normal text
+=======
+>>>>>>> 19fcfe52fc7bd2929343b5bac145df6e0d4db60d
         contentDiv.textContent = content;
     }
 
@@ -238,8 +252,11 @@ function addMessageToUI(sender, content, type) {
     UI.messageArea.scrollTop = UI.messageArea.scrollHeight;
 }
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 19fcfe52fc7bd2929343b5bac145df6e0d4db60d
 // ✅ Improvement 2: Ensure layout correction on window resize (mobile ↔ desktop)
 window.addEventListener('resize', () => {
     if (window.innerWidth >= 768) {
